@@ -31,6 +31,7 @@ public final class Constants {
     public static final double wheelBaseLength = 0.639;
     private static final double wheelBaseWidth = 0.639;
 
+    // Module coordinates according to the chassis
     public static final Translation2d FRONTLEFTMODULE_TRANSLATION2D = new Translation2d(wheelBaseLength / 2,
             wheelBaseWidth / 2);
     public static final Translation2d FRONTRIGHTMODULE_TRANSLATION2D = new Translation2d(wheelBaseLength / 2,
@@ -93,9 +94,9 @@ public final class Constants {
 
         public static final double maxSpeed = 5;
 
-        public static final double maxTransSpeedMetersPerSecond = 3.3;
-        public static final double maxAngularSpeedRadPerSec = 2 * Math.PI;
-        public static final double maxAngularAccelRadPerSecSq = Math.pow(maxAngularSpeedRadPerSec, 2);
+        public static final double maxTransSpeedMetersPerSecond = 3.3; // translation speed (x/y)
+        public static final double maxAngularSpeedRadPerSec = 2 * Math.PI; // angular speed (omega)
+        public static final double maxAngularAccelRadPerSecSq = Math.pow(maxAngularSpeedRadPerSec, 2); // angular acceleration
 
         public static final TrapezoidProfile.Constraints rotPIDconstraints = new TrapezoidProfile.Constraints(
                 maxAngularSpeedRadPerSec, maxAngularAccelRadPerSecSq);
@@ -106,6 +107,7 @@ public final class Constants {
                 drivePeakCurrentLimit, drivePeakCurrentDuration, driveEnableCurrentLimit, openLoopRamp, closedLoopRamp);
     }
 
+    // TODO: Configure each module's angle offset in calibration
     public static final class SwerveModuleFrontLeft {
         public static final int angleMotorID = 0;
         public static final int driveMotorID = 1;
@@ -147,10 +149,10 @@ public final class Constants {
          * As follows:
          * LT --------------------------- RT
          * LB --------------------------- RB
-         * Y
-         * |LStick| |View| |Menu| X B
-         * A
-         * |DPAD| |RStick|
+         *                               Y
+         * |LStick| |View| |Menu|      X   B
+         *                               A
+         *      |DPAD|           |RStick|
          * 
          */
         public static final int X = 1;

@@ -16,6 +16,7 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
@@ -28,16 +29,16 @@ import frc.team6014.lib.util.SwerveUtils.SwerveModuleConstants;
 
 public class DriveSubsystem extends SubsystemBase {
 
+  private static DriveSubsystem mInstance;
+
   private final Trigger brakeModeTrigger; // ! Learn what these 2 are
   private final StartEndCommand brakeModeCommand;
 
-  private static DriveSubsystem mInstance;
+  public SwerveModuleBase[] mSwerveModules; // collection of modules
+  private SwerveModuleState[] states; // collection of modules' states
+  private ChassisSpeeds desiredChassisSpeeds; // speeds relative to the robot chassis
 
-  public SwerveModuleBase[] mSwerveModules;
-  private SwerveModuleState[] states;
-  private ChassisSpeeds desiredChassisSpeeds;
-
-  public SwerveDriveOdometry m_odometry;
+  public SwerveDriveOdometry mOdometry; 
 
   private double[] velocityDesired = new double[4];
   private double[] angleDesired = new double[4];
@@ -45,10 +46,12 @@ public class DriveSubsystem extends SubsystemBase {
   Pigeon2 mGyro = new Pigeon2(Constants.Pigeon2CanID, Constants.CANIVORE_CANBUS);
 
   private double snapAngle = 0.0;
+
   private double timeSinceRot = 0.0;
   private double lastRotTime = 0.0;
   private double timeSinceDrive = 0.0;
   private double lastDriveTime = 0.0;
+
   private boolean isLocked = false;
 
   private ProfiledPIDController snapPIDController = new ProfiledPIDController(DriveConstants.snapkP,
@@ -87,11 +90,11 @@ public class DriveSubsystem extends SubsystemBase {
     snapTimer.reset();
     snapTimer.start();
 
-    snapPIDController.enableContinuousInput(-Math.PI, Math.PI);
+    snapPIDController.enableContinuousInput(-Math.PI, Math.PI); // ensure that the PID controller knows -180 and 180 are connected
 
     zeroHeading();
 
-    m_odometry = new SwerveDriveOdometry(Constants.kinematics, getRotation2d(), getModulePositions());
+    mOdometry = new SwerveDriveOdometry(Constants.kinematics, getRotation2d(), getModulePositions());
 
     brakeModeTrigger = new Trigger(RobotState::isEnabled);
     brakeModeCommand = new StartEndCommand(() -> {
@@ -117,7 +120,7 @@ public class DriveSubsystem extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
     updateOdometry();
-    brakeModeTrigger.whileTrue(brakeModeCommand); // TODO: Fix this
+    brakeModeTrigger.whileTrue(brakeModeCommand);
 
   }
 
@@ -127,6 +130,8 @@ public class DriveSubsystem extends SubsystemBase {
 
   public void swerveDrive(double xSpeed, double ySpeed, double rot, boolean fieldRelative) {
 
+    // if robot is field centric, construct ChassisSpeeds from field relative speeds
+    // if not, construct ChassisSpeeds from robot relative speeds
     desiredChassisSpeeds = fieldRelative
         ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, getDriverCentricRotation2d())
         : new ChassisSpeeds(xSpeed, ySpeed, rot);
@@ -142,8 +147,11 @@ public class DriveSubsystem extends SubsystemBase {
       };
     }
 
-    SwerveDriveKinematics.desaturateWheelSpeeds(states, DriveConstants.maxSpeed);
+    SwerveDriveKinematics.desaturateWheelSpeeds(states, DriveConstants.maxSpeed); // normalizes wheel speeds to absolute threshold
 
+    /*
+     * Sets open loop states
+     */
     for (int i = 0; i < 4; i++) {
       mSwerveModules[i].setDesiredState(states[i], true);
       velocityDesired[i] = states[i].speedMetersPerSecond;
@@ -153,7 +161,7 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   /*
-   * Auto Swerve States Method
+   * Auto Swerve States Method (Closed Loop)
    */
 
   public synchronized void setClosedLoopStates(SwerveModuleState[] desiredStates) {
@@ -190,14 +198,14 @@ public class DriveSubsystem extends SubsystemBase {
   public void resetOdometry(Pose2d pose) {
     mGyro.reset();
     mGyro.setYaw(pose.getRotation().times(DriveConstants.invertGyro ? -1 : 1).getDegrees());
-    m_odometry.resetPosition(mGyro.getRotation2d(), getModulePositions(), pose);
+    mOdometry.resetPosition(mGyro.getRotation2d(), getModulePositions(), pose);
   }
 
   public void resetOdometry(Rotation2d angle) {
     Pose2d pose = new Pose2d(getPoseMeters().getTranslation(), angle);
     mGyro.reset();
     mGyro.setYaw(angle.getDegrees());
-    m_odometry.resetPosition(mGyro.getRotation2d(), getModulePositions(), pose);
+    mOdometry.resetPosition(mGyro.getRotation2d(), getModulePositions(), pose);
   }
 
   public void resetSnapPID() {
@@ -226,13 +234,13 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public void updateOdometry() {
-    m_odometry.update(
+    mOdometry.update(
         getRotation2d(),
         getModulePositions());
   }
 
   public void setPose(Pose2d pose) {
-    m_odometry.resetPosition(mGyro.getRotation2d(), getModulePositions(), pose);
+    mOdometry.resetPosition(mGyro.getRotation2d(), getModulePositions(), pose);
   }
 
   /*
@@ -244,6 +252,7 @@ public class DriveSubsystem extends SubsystemBase {
         .times(DriveConstants.invertGyro ? -1 : 1);
   }
 
+  // Returns gyro angle relative to alliance station
   public Rotation2d getDriverCentricRotation2d() {
     return DriverStation.getAlliance() == Alliance.Red
         ? Rotation2d.fromDegrees(Math.IEEEremainder(mGyro.getAngle() + 180, 360.0))
@@ -253,7 +262,7 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public Pose2d getPoseMeters() {
-    return m_odometry.getPoseMeters();
+    return mOdometry.getPoseMeters();
   }
 
   SwerveModulePosition[] getModulePositions() {
@@ -294,11 +303,9 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   private String getFormattedPose() {
-    var pose = getPoseMeters();
-    return String.format("(%.3f, %.3f) %.2f degrees",
-        pose.getX(),
-        pose.getY(),
-        pose.getRotation().getDegrees());
+    var formattedPose = String.format("(%.3f, %.3f) %.2f degrees", getPoseMeters().getX(), getPoseMeters().getY(), getPoseMeters().getRotation().getDegrees());
+    SmartDashboard.putString("Pose", formattedPose);
+    return formattedPose;
   }
 
 }

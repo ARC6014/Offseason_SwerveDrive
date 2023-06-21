@@ -24,7 +24,14 @@ import frc.team6014.lib.util.SwerveUtils.CTREModuleState;
 import frc.team6014.lib.util.SwerveUtils.SwerveDriveConstants;
 import frc.team6014.lib.util.SwerveUtils.SwerveModuleConstants;
 
-/** Add your docs here. */
+/** Base for constructing any swerve module
+ * Basic Logic is that:
+ * * we have 3 fields: xspd, yspd, rot
+ * * 1) convert the speeds to the robot's perspective --> ChassisSpeeds
+ * * 2) convert the chassis speeds to the individual module's perspective --> SwerveModuleState
+ * * 3) optimize the module states to minimize the change in heading --> CTREModuleState
+ * * 4) apply the states to the modules --> setDesiredState (done with FF and PID) 
+ */
 public class SwerveModuleBase {
 
     private String mId;
@@ -34,7 +41,7 @@ public class SwerveModuleBase {
 
     private SimpleMotorFeedforward mDriveFeedforward;
 
-    private boolean isDriveMotorInverted = false;
+    private boolean isDriveMotorInverted = false; // TODO: Check all
     private boolean isAngleMotorInverted = true;
     private boolean isRotEncoderInverted = false;
 
@@ -51,22 +58,19 @@ public class SwerveModuleBase {
      * @param name            Name of the Module
      * @param constants       Individual constants for a module
      * @param swerveConstants Global swerve base constants
-     * @param feedForward     feed forward of the swerve system
      */
 
-    public SwerveModuleBase(
-            String name, SwerveModuleConstants constants, SwerveDriveConstants swerveConstants) {
+    public SwerveModuleBase(String name, SwerveModuleConstants constants, SwerveDriveConstants swerveConstants) {
 
         mId = name;
 
-        mDriveFeedforward = new SimpleMotorFeedforward(constants.moduleTuningkS, constants.moduleTuningkV,
-                DriveConstants.drivekA);
+        mDriveFeedforward = new SimpleMotorFeedforward(constants.moduleTuningkS, constants.moduleTuningkV, DriveConstants.drivekA);
 
         mRotEncoder = new WPI_CANCoder(constants.CANCoderID, Constants.CANIVORE_CANBUS);
         mDriveMotor = new WPI_TalonFX(constants.driveMotorID);
         mAngleMotor = new WPI_TalonFX(constants.angleMotorID);
 
-        configAll();
+        configAll(); // Configs all the motors and encoders
 
         mRotEncoder.configMagnetOffset(constants.CANCoderAngleOffset);
 
@@ -87,7 +91,7 @@ public class SwerveModuleBase {
 
     public void setDesiredState(SwerveModuleState desiredState, boolean isOpenLoop) {
 
-        desiredState = CTREModuleState.optimize(desiredState, getState().angle);
+        desiredState = CTREModuleState.optimize(desiredState, getState().angle); // minimize the change in heading/easiest way
 
         if (isOpenLoop) {
             double percentOutput = desiredState.speedMetersPerSecond / maxSpeed;

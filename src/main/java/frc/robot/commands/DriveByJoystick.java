@@ -30,8 +30,7 @@ public class DriveByJoystick extends CommandBase {
   private double driveScalarValue = DriveConstants.drivePowerScalar;
 
   /** Creates a new DriveByJoystick. */
-  public DriveByJoystick(DoubleSupplier x, DoubleSupplier y, DoubleSupplier rotation, BooleanSupplier isLocked,
-      BooleanSupplier rush, BooleanSupplier steady) {
+  public DriveByJoystick(DoubleSupplier x, DoubleSupplier y, DoubleSupplier rotation, BooleanSupplier isLocked, BooleanSupplier rush, BooleanSupplier steady) {
     mX = x;
     mY = y;
     mRotation = rotation;
@@ -63,8 +62,7 @@ public class DriveByJoystick extends CommandBase {
 
     double xSpeed = mSlewX.calculate(inputTransform(mX.getAsDouble()) * DriveConstants.maxSpeed) * scalar;
     double ySpeed = mSlewY.calculate(inputTransform(mY.getAsDouble()) * DriveConstants.maxSpeed) * scalar;
-    double rotation = mSlewRot
-        .calculate(inputTransform(mRotation.getAsDouble()) * DriveConstants.maxAngularSpeedRadPerSec) * scalar;
+    double rotation = mSlewRot.calculate(inputTransform(mRotation.getAsDouble()) * DriveConstants.maxAngularSpeedRadPerSec) * scalar;
 
     if (mIsLocked.getAsBoolean()) {
       mSlewX.reset(0);
