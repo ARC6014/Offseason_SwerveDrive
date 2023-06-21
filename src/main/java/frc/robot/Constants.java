@@ -32,6 +32,12 @@ public final class Constants {
     private static final double wheelBaseWidth = 0.639;
 
     // Module coordinates according to the chassis
+    public static final Translation2d swerveModuleLocations[] = {
+            new Translation2d(wheelBaseLength / 2, wheelBaseWidth / 2), // FL
+            new Translation2d(wheelBaseLength / 2, -wheelBaseWidth / 2), // FR
+            new Translation2d(-wheelBaseLength / 2, wheelBaseWidth / 2), // RL
+            new Translation2d(-wheelBaseLength / 2, -wheelBaseWidth / 2) // RR
+    };
     public static final Translation2d FRONTLEFTMODULE_TRANSLATION2D = new Translation2d(wheelBaseLength / 2,
             wheelBaseWidth / 2);
     public static final Translation2d FRONTRIGHTMODULE_TRANSLATION2D = new Translation2d(wheelBaseLength / 2,

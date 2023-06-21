@@ -15,6 +15,7 @@ import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
+import frc.team6014.lib.drivers.ModuleState;
 import frc.robot.Constants;
 import frc.robot.Constants.DriveConstants;
 import frc.team6014.lib.math.Conversions;
@@ -35,6 +36,7 @@ import frc.team6014.lib.util.SwerveUtils.SwerveModuleConstants;
 public class SwerveModuleBase {
 
     private String mId;
+    private final int mModuleNumber;
     private WPI_TalonFX mDriveMotor;
     private WPI_TalonFX mAngleMotor;
     private WPI_CANCoder mRotEncoder;
@@ -52,17 +54,24 @@ public class SwerveModuleBase {
 
     private double maxSpeed = DriveConstants.maxSpeed;
 
+    private final double kAngleOffset;
     private double lastAngle;
 
     /**
-     * @param name            Name of the Module
+     * @param moduleNum       Number of the module
+     * @param name            Name of the module
      * @param constants       Individual constants for a module
      * @param swerveConstants Global swerve base constants
      */
 
-    public SwerveModuleBase(String name, SwerveModuleConstants constants, SwerveDriveConstants swerveConstants) {
+    public SwerveModuleBase(int moduleNum, String name, SwerveModuleConstants constants, SwerveDriveConstants swerveConstants) {
 
         mId = name;
+
+        mModuleNumber = moduleNum;
+
+        kAngleOffset = constants.CANCoderAngleOffset;
+
 
         mDriveFeedforward = new SimpleMotorFeedforward(constants.moduleTuningkS, constants.moduleTuningkV, DriveConstants.drivekA);
 
@@ -154,12 +163,24 @@ public class SwerveModuleBase {
      * Getters
      */
 
+    public int getModuleNumber() {
+        return mModuleNumber;
+    }
+
     public WPI_TalonFX getDriveMotor() {
         return mDriveMotor;
     }
 
+    // public double getDriveMotorCurrent() {
+    //     return mDriveMotor.getStatorCurrent().getValue();
+    // }
+
     public WPI_TalonFX getAngleMotor() {
         return mAngleMotor;
+    }
+
+    public double getAngleOffset() {
+        return kAngleOffset;
     }
 
     public String getName() {
@@ -181,5 +202,6 @@ public class SwerveModuleBase {
         Rotation2d angle = Rotation2d.fromDegrees(Conversions.falconToDegrees(mAngleMotor.getSelectedSensorPosition(), angleGearbox.getRatio()));
         return new SwerveModuleState(velocity, angle);
     }
+
 
 }

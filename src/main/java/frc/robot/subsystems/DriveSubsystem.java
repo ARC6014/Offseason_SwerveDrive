@@ -28,6 +28,9 @@ import frc.team6014.lib.drivers.SwerveModuleBase;
 import frc.team6014.lib.util.SwerveUtils.SwerveModuleConstants;
 
 public class DriveSubsystem extends SubsystemBase {
+  // Swerve numbering:
+  // 0 1
+  // 2 3
 
   private static DriveSubsystem mInstance;
 
@@ -62,25 +65,25 @@ public class DriveSubsystem extends SubsystemBase {
   /** Creates a new DriveSubsystem. */
   public DriveSubsystem() {
     mSwerveModules = new SwerveModuleBase[] {
-        new SwerveModuleBase("FL", SwerveModuleConstants.generateModuleConstants(
+        new SwerveModuleBase(0, "FL", SwerveModuleConstants.generateModuleConstants(
             Constants.SwerveModuleFrontLeft.driveMotorID, Constants.SwerveModuleFrontLeft.angleMotorID,
             Constants.SwerveModuleFrontLeft.cancoderID, Constants.SwerveModuleFrontLeft.angleOffset,
             Constants.SwerveModuleFrontLeft.modulekS, Constants.SwerveModuleFrontLeft.modulekV),
             DriveConstants.swerveConstants),
 
-        new SwerveModuleBase("FR", SwerveModuleConstants.generateModuleConstants(
+        new SwerveModuleBase(1, "FR", SwerveModuleConstants.generateModuleConstants(
             Constants.SwerveModuleFrontRight.driveMotorID, Constants.SwerveModuleFrontRight.angleMotorID,
             Constants.SwerveModuleFrontRight.cancoderID, Constants.SwerveModuleFrontRight.angleOffset,
             Constants.SwerveModuleFrontRight.modulekS, Constants.SwerveModuleFrontRight.modulekV),
             DriveConstants.swerveConstants),
 
-        new SwerveModuleBase("RL", SwerveModuleConstants.generateModuleConstants(
+        new SwerveModuleBase(2, "RL", SwerveModuleConstants.generateModuleConstants(
             Constants.SwerveModuleRearLeft.driveMotorID, Constants.SwerveModuleRearLeft.angleMotorID,
             Constants.SwerveModuleRearLeft.cancoderID, Constants.SwerveModuleRearLeft.angleOffset,
             Constants.SwerveModuleRearLeft.modulekS, Constants.SwerveModuleRearLeft.modulekV),
             DriveConstants.swerveConstants),
 
-        new SwerveModuleBase("RR", SwerveModuleConstants.generateModuleConstants(
+        new SwerveModuleBase(3, "RR", SwerveModuleConstants.generateModuleConstants(
             Constants.SwerveModuleRearRight.driveMotorID, Constants.SwerveModuleRearRight.angleMotorID,
             Constants.SwerveModuleRearRight.cancoderID, Constants.SwerveModuleRearRight.angleOffset,
             Constants.SwerveModuleRearRight.modulekS, Constants.SwerveModuleRearRight.modulekV),
@@ -274,11 +277,19 @@ public class DriveSubsystem extends SubsystemBase {
     };
   }
 
+  public SwerveModuleState[] getModuleStates() {
+        SwerveModuleState[] states = new SwerveModuleState[4];
+        for(SwerveModuleBase mod : mSwerveModules){
+            states[mod.getModuleNumber()] = mod.getState();
+        }
+        return states;
+    }
+
   public ChassisSpeeds getChassisSpeed() {
     return Constants.kinematics.toChassisSpeeds(mSwerveModules[0].getState(), mSwerveModules[1].getState(),
         mSwerveModules[2].getState(), mSwerveModules[3].getState());
   }
-
+/* 
   private double calculateSnapValue(double xSpeed, double ySpeed, double rot) {
 
     double output = rot;
@@ -301,7 +312,7 @@ public class DriveSubsystem extends SubsystemBase {
     }
     return output;
   }
-
+*/
   private String getFormattedPose() {
     var formattedPose = String.format("(%.3f, %.3f) %.2f degrees", getPoseMeters().getX(), getPoseMeters().getY(), getPoseMeters().getRotation().getDegrees());
     SmartDashboard.putString("Pose", formattedPose);
