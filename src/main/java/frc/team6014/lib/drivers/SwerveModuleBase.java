@@ -15,7 +15,6 @@ import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
-import frc.team6014.lib.drivers.ModuleState;
 import frc.robot.Constants;
 import frc.robot.Constants.DriveConstants;
 import frc.team6014.lib.math.Conversions;

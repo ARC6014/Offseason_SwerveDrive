@@ -83,6 +83,7 @@ public final class Constants {
         public static final double wheelCircumference = Units.inchesToMeters(4) * Math.PI;
 
         // PID and Feedforward
+        // TODO: Each module can have slightly different individual PID values
         public static final double drivekP = 0.05;
         public static final double drivekI = 0;
         public static final double drivekD = 0;
