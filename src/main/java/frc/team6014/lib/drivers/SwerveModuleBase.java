@@ -25,7 +25,7 @@ import frc.team6014.lib.util.SwerveUtils.SwerveDriveConstants;
 import frc.team6014.lib.util.SwerveUtils.SwerveModuleConstants;
 
 /** Base for constructing any swerve module
- * Basic Logic is that:
+ * * Basic Logic is that:
  * * we have 3 fields: xspd, yspd, rot
  * * 1) convert the speeds to the robot's perspective --> ChassisSpeeds
  * * 2) convert the chassis speeds to the individual module's perspective --> SwerveModuleState
@@ -35,7 +35,7 @@ import frc.team6014.lib.util.SwerveUtils.SwerveModuleConstants;
 public class SwerveModuleBase {
 
     private String mId;
-    private final int mModuleNumber;
+    private int mModuleNumber;
     private WPI_TalonFX mDriveMotor;
     private WPI_TalonFX mAngleMotor;
     private WPI_CANCoder mRotEncoder;

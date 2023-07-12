@@ -8,6 +8,8 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.DriveByJoystick;
 import frc.robot.subsystems.DriveSubsystem;
 
@@ -23,12 +25,20 @@ import frc.robot.subsystems.DriveSubsystem;
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final DriveSubsystem mDrive = DriveSubsystem.getInstance();
-  private final Joystick mDriver = new Joystick(0);
-  private final Joystick mOperator = new Joystick(1);
+  // private final Joystick mDriver = new Joystick(0);
+  // private final Joystick mOperator = new Joystick(1);
 
-  private final DriveByJoystick driveByJoystick = new DriveByJoystick(() -> mDriver.getRawAxis(1) * -1,
-      () -> mDriver.getRawAxis(0) * -1, () -> mDriver.getRawAxis(2) * -1, () -> mDriver.getRawButton(7),
-      () -> mDriver.getRawButton(8), () -> mOperator.getRawButton(9));
+  private final CommandXboxController mDriver = new CommandXboxController(0);
+  private final CommandJoystick mOperator = new CommandJoystick(1);
+
+  
+  //private final DriveByJoystick driveByJoystick = new DriveByJoystick(() -> mDriver.getRawAxis(1) * -1, () -> mDriver.getRawAxis(0) * -1, () -> mDriver.getRawAxis(2) * -1, () -> mDriver.getRawButton(7), () -> mDriver.getRawButton(8), () -> mOperator.getRawButton(9));
+
+  // Alternative if using CommandXboxController
+  // TODO: Check lock swerve button functionality
+  private final DriveByJoystick driveByJoystick = new DriveByJoystick(mDriver::getLeftY, mDriver::getLeftX,
+      mDriver::getRightX, () -> mDriver.leftTrigger().getAsBoolean(), () -> mDriver.rightBumper().getAsBoolean(),
+      () -> mDriver.leftBumper().getAsBoolean());
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.

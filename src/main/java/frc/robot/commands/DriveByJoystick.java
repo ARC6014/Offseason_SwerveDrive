@@ -31,10 +31,10 @@ public class DriveByJoystick extends CommandBase {
 
   /** Creates a new DriveByJoystick. */
   public DriveByJoystick(DoubleSupplier x, DoubleSupplier y, DoubleSupplier rotation, BooleanSupplier isLocked, BooleanSupplier rush, BooleanSupplier steady) {
-    mX = x;
-    mY = y;
-    mRotation = rotation;
-    mIsLocked = isLocked;
+    mX = x; // forward
+    mY = y; // strafe
+    mRotation = rotation; // rotation
+    mIsLocked = isLocked; // is swerve locked
     mRush = rush;
     mSteady = steady;
     // Use addRequirements() here to declare subsystem dependencies.
