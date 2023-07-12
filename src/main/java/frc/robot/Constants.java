@@ -73,7 +73,7 @@ public final class Constants {
         public static final double openLoopRamp = 0; // ! What do these do?
         public static final double closedLoopRamp = 0;
 
-        public static final double drivePowerScalar = 0.55; // ! What does this do?
+        public static final double drivePowerScalar = 0.55; 
         public static final double driveSlewRateLimitX = 7;
         public static final double driveSlewRateLimitY = 7;
         public static final double driveSlewRateLimitRot = 12;
