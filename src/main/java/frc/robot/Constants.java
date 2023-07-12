@@ -27,6 +27,7 @@ import frc.team6014.lib.util.SwerveUtils.SwerveDriveConstants;
 public final class Constants {
     public static final String CANIVORE_CANBUS = "CANivore";
     public static final int Pigeon2CanID = 0;
+    public static final boolean tuningMode = false;
 
     public static final double wheelBaseLength = 0.639;
     private static final double wheelBaseWidth = 0.639;

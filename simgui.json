@@ -23,13 +23,28 @@
   },
   "NTProvider": {
     "types": {
-      "/FMSInfo": "FMSInfo"
+      "/FMSInfo": "FMSInfo",
+      "/SmartDashboard/Field": "Field2d"
     }
   },
   "NetworkTables": {
     "transitory": {
       "Shuffleboard": {
+        "Swerve": {
+          "Module 0 Angle": {
+            "open": true
+          },
+          "Module 1 Angle": {
+            "open": true
+          },
+          "open": true
+        },
         "open": true
+      },
+      "SmartDashboard": {
+        "Field": {
+          "open": true
+        }
       }
     }
   }

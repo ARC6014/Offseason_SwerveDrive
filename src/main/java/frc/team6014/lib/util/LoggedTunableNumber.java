@@ -27,10 +27,18 @@ public class LoggedTunableNumber {
      * Create a new TunableNumber
      * 
      * @param dashboardKey Key on dashboard
+     * @param defaultValue Default value
+     * @param tuningMode   Whether the robot is in tuning mode
+     * @return The new TunableNumber
      */
     public LoggedTunableNumber(String dashboardKey, double defaultValue, boolean tuningMode) {
         this.key = tableKey + "/" + dashboardKey;
         this.tuningMode = tuningMode;
+        setDefault(defaultValue);
+    }
+
+    public LoggedTunableNumber(String dashboardKey, double defaultValue) {
+        this.key = tableKey + "/" + dashboardKey;
         setDefault(defaultValue);
     }
 

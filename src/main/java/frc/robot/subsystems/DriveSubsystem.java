@@ -25,6 +25,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants;
 import frc.robot.Constants.DriveConstants;
 import frc.team6014.lib.drivers.SwerveModuleBase;
+import frc.team6014.lib.util.LoggedTunableNumber;
 import frc.team6014.lib.util.SwerveUtils.SwerveModuleConstants;
 
 public class DriveSubsystem extends SubsystemBase {
@@ -41,7 +42,7 @@ public class DriveSubsystem extends SubsystemBase {
   private SwerveModuleState[] states; // collection of modules' states
   private ChassisSpeeds desiredChassisSpeeds; // speeds relative to the robot chassis
 
-  public SwerveDriveOdometry mOdometry; 
+  public SwerveDriveOdometry mOdometry;
 
   private double[] velocityDesired = new double[4];
   private double[] angleDesired = new double[4];
@@ -61,6 +62,25 @@ public class DriveSubsystem extends SubsystemBase {
       DriveConstants.snapkI, DriveConstants.snapkD, DriveConstants.rotPIDconstraints);
 
   private final Timer snapTimer = new Timer();
+
+  // TODO: Update periodic for tunable numbers (right now I couldn't do it)
+  private static final LoggedTunableNumber front_left_module_kS = new LoggedTunableNumber("FL Module kS",
+      Constants.SwerveModuleFrontLeft.modulekS);
+  private static final LoggedTunableNumber front_right_module_kS = new LoggedTunableNumber("FR Module kS",
+      Constants.SwerveModuleFrontRight.modulekS);
+  private static final LoggedTunableNumber rear_left_module_kS = new LoggedTunableNumber("RL Module kS",
+      Constants.SwerveModuleRearLeft.modulekS);
+  private static final LoggedTunableNumber rear_right_module_kS = new LoggedTunableNumber("RR Module kS",
+      Constants.SwerveModuleRearRight.modulekS);
+
+  private static final LoggedTunableNumber front_left_module_kV = new LoggedTunableNumber("FL Module kV",
+      Constants.SwerveModuleFrontLeft.modulekV);
+  private static final LoggedTunableNumber front_right_module_kV = new LoggedTunableNumber("FR Module kV",
+      Constants.SwerveModuleFrontRight.modulekV);
+  private static final LoggedTunableNumber rear_left_module_kV = new LoggedTunableNumber("RL Module kV",
+      Constants.SwerveModuleRearLeft.modulekV);
+  private static final LoggedTunableNumber rear_right_module_kV = new LoggedTunableNumber("RR Module kV",
+      Constants.SwerveModuleRearRight.modulekV);
 
   /** Creates a new DriveSubsystem. */
   public DriveSubsystem() {
@@ -93,7 +113,8 @@ public class DriveSubsystem extends SubsystemBase {
     snapTimer.reset();
     snapTimer.start();
 
-    snapPIDController.enableContinuousInput(-Math.PI, Math.PI); // ensure that the PID controller knows -180 and 180 are connected
+    snapPIDController.enableContinuousInput(-Math.PI, Math.PI); // ensure that the PID controller knows -180 and 180 are
+                                                                // connected
 
     zeroHeading();
 
@@ -150,7 +171,8 @@ public class DriveSubsystem extends SubsystemBase {
       };
     }
 
-    SwerveDriveKinematics.desaturateWheelSpeeds(states, DriveConstants.maxSpeed); // normalizes wheel speeds to absolute threshold
+    SwerveDriveKinematics.desaturateWheelSpeeds(states, DriveConstants.maxSpeed); // normalizes wheel speeds to absolute
+                                                                                  // threshold
 
     /*
      * Sets open loop states
@@ -278,45 +300,41 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public SwerveModuleState[] getModuleStates() {
-        SwerveModuleState[] states = new SwerveModuleState[4];
-        for(SwerveModuleBase mod : mSwerveModules){
-            states[mod.getModuleNumber()] = mod.getState();
-        }
-        return states;
+    SwerveModuleState[] states = new SwerveModuleState[4];
+    for (SwerveModuleBase mod : mSwerveModules) {
+      states[mod.getModuleNumber()] = mod.getState();
     }
+    return states;
+  }
 
   public ChassisSpeeds getChassisSpeed() {
     return Constants.kinematics.toChassisSpeeds(mSwerveModules[0].getState(), mSwerveModules[1].getState(),
         mSwerveModules[2].getState(), mSwerveModules[3].getState());
   }
-/* 
-  private double calculateSnapValue(double xSpeed, double ySpeed, double rot) {
-
-    double output = rot;
-
-    if (Math.abs(rot) >= 0.05) {
-      lastRotTime = snapTimer.get();
-    }
-
-    if (Math.abs(xSpeed) >= 0.05 || Math.abs(ySpeed) >= 0.05) {
-      lastDriveTime = snapTimer.get();
-    }
-
-    timeSinceRot = snapTimer.get() - lastRotTime;
-    timeSinceDrive = snapTimer.get() - lastDriveTime;
-
-    if (timeSinceRot < 0.5) {
-      snapAngle = getRotation2d().getRadians();
-    } else if (Math.abs(rot) < 0.05 && timeSinceDrive < 0.2) {
-      output = snapPIDController.calculate(getRotation2d().getRadians(), snapAngle);
-    }
-    return output;
-  }
-*/
-  private String getFormattedPose() {
-    var formattedPose = String.format("(%.3f, %.3f) %.2f degrees", getPoseMeters().getX(), getPoseMeters().getY(), getPoseMeters().getRotation().getDegrees());
-    SmartDashboard.putString("Pose", formattedPose);
-    return formattedPose;
-  }
+  /*
+   * private double calculateSnapValue(double xSpeed, double ySpeed, double rot) {
+   * 
+   * double output = rot;
+   * 
+   * if (Math.abs(rot) >= 0.05) {
+   * lastRotTime = snapTimer.get();
+   * }
+   * 
+   * if (Math.abs(xSpeed) >= 0.05 || Math.abs(ySpeed) >= 0.05) {
+   * lastDriveTime = snapTimer.get();
+   * }
+   * 
+   * timeSinceRot = snapTimer.get() - lastRotTime;
+   * timeSinceDrive = snapTimer.get() - lastDriveTime;
+   * 
+   * if (timeSinceRot < 0.5) {
+   * snapAngle = getRotation2d().getRadians();
+   * } else if (Math.abs(rot) < 0.05 && timeSinceDrive < 0.2) {
+   * output = snapPIDController.calculate(getRotation2d().getRadians(),
+   * snapAngle);
+   * }
+   * return output;
+   * }
+   */
 
 }
