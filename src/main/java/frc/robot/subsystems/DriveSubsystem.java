@@ -30,12 +30,12 @@ import frc.team6014.lib.util.SwerveUtils.SwerveModuleConstants;
 
 public class DriveSubsystem extends SubsystemBase {
   // Swerve numbering:
-  // 0 1
-  // 2 3
+  // 0-FL 1-FR
+  // 2-BL 3-BR
 
   private static DriveSubsystem mInstance;
 
-  private final Trigger brakeModeTrigger; // ! Learn what these 2 are
+  private final Trigger brakeModeTrigger;
   private final StartEndCommand brakeModeCommand;
 
   public SwerveModuleBase[] mSwerveModules; // collection of modules
@@ -49,39 +49,14 @@ public class DriveSubsystem extends SubsystemBase {
 
   Pigeon2 mGyro = new Pigeon2(Constants.Pigeon2CanID, Constants.CANIVORE_CANBUS);
 
-  private double snapAngle = 0.0;
-
-  private double timeSinceRot = 0.0;
-  private double lastRotTime = 0.0;
-  private double timeSinceDrive = 0.0;
-  private double lastDriveTime = 0.0;
-
   private boolean isLocked = false;
 
+  // TODO: may comment out this
   private ProfiledPIDController snapPIDController = new ProfiledPIDController(DriveConstants.snapkP,
       DriveConstants.snapkI, DriveConstants.snapkD, DriveConstants.rotPIDconstraints);
 
   private final Timer snapTimer = new Timer();
-
-  // TODO: Update periodic for tunable numbers (right now I couldn't do it)
-  private static final LoggedTunableNumber front_left_module_kS = new LoggedTunableNumber("FL Module kS",
-      Constants.SwerveModuleFrontLeft.modulekS);
-  private static final LoggedTunableNumber front_right_module_kS = new LoggedTunableNumber("FR Module kS",
-      Constants.SwerveModuleFrontRight.modulekS);
-  private static final LoggedTunableNumber rear_left_module_kS = new LoggedTunableNumber("RL Module kS",
-      Constants.SwerveModuleRearLeft.modulekS);
-  private static final LoggedTunableNumber rear_right_module_kS = new LoggedTunableNumber("RR Module kS",
-      Constants.SwerveModuleRearRight.modulekS);
-
-  private static final LoggedTunableNumber front_left_module_kV = new LoggedTunableNumber("FL Module kV",
-      Constants.SwerveModuleFrontLeft.modulekV);
-  private static final LoggedTunableNumber front_right_module_kV = new LoggedTunableNumber("FR Module kV",
-      Constants.SwerveModuleFrontRight.modulekV);
-  private static final LoggedTunableNumber rear_left_module_kV = new LoggedTunableNumber("RL Module kV",
-      Constants.SwerveModuleRearLeft.modulekV);
-  private static final LoggedTunableNumber rear_right_module_kV = new LoggedTunableNumber("RR Module kV",
-      Constants.SwerveModuleRearRight.modulekV);
-
+  
   /** Creates a new DriveSubsystem. */
   public DriveSubsystem() {
     mSwerveModules = new SwerveModuleBase[] {
@@ -311,30 +286,5 @@ public class DriveSubsystem extends SubsystemBase {
     return Constants.kinematics.toChassisSpeeds(mSwerveModules[0].getState(), mSwerveModules[1].getState(),
         mSwerveModules[2].getState(), mSwerveModules[3].getState());
   }
-  /*
-   * private double calculateSnapValue(double xSpeed, double ySpeed, double rot) {
-   * 
-   * double output = rot;
-   * 
-   * if (Math.abs(rot) >= 0.05) {
-   * lastRotTime = snapTimer.get();
-   * }
-   * 
-   * if (Math.abs(xSpeed) >= 0.05 || Math.abs(ySpeed) >= 0.05) {
-   * lastDriveTime = snapTimer.get();
-   * }
-   * 
-   * timeSinceRot = snapTimer.get() - lastRotTime;
-   * timeSinceDrive = snapTimer.get() - lastDriveTime;
-   * 
-   * if (timeSinceRot < 0.5) {
-   * snapAngle = getRotation2d().getRadians();
-   * } else if (Math.abs(rot) < 0.05 && timeSinceDrive < 0.2) {
-   * output = snapPIDController.calculate(getRotation2d().getRadians(),
-   * snapAngle);
-   * }
-   * return output;
-   * }
-   */
 
 }

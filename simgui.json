@@ -28,13 +28,22 @@
     }
   },
   "NetworkTables": {
+    "SmartDashboard": {
+      "Field": {
+        "open": true
+      },
+      "open": true
+    },
+    "combined": true,
+    "precision": 3,
+    "special": true,
     "transitory": {
       "Shuffleboard": {
         "Swerve": {
-          "Module 0 Angle": {
+          "Module 1 Angle": {
             "open": true
           },
-          "Module 1 Angle": {
+          "Module 2 Angle": {
             "open": true
           },
           "open": true
@@ -44,7 +53,8 @@
       "SmartDashboard": {
         "Field": {
           "open": true
-        }
+        },
+        "open": true
       }
     }
   }

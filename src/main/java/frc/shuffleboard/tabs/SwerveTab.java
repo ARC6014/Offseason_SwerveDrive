@@ -20,7 +20,6 @@ public class SwerveTab extends ShuffleboardTabBase {
     private GenericEntry[] mDriveCANCoders = new GenericEntry[4];
     private GenericEntry[] mDriveIntegrated = new GenericEntry[4];
     private GenericEntry[] mDriveMPS = new GenericEntry[4];
-    private GenericEntry[] mDriveCurrent = new GenericEntry[4];
 
     private GenericEntry mDriveOdometryX;
     private GenericEntry mDriveOdometryY;
@@ -44,7 +43,7 @@ public class SwerveTab extends ShuffleboardTabBase {
                     .withPosition(0, 0)
                     .withSize(5, 1)
                     .getEntry();
-            mDriveLayouts[i].add("Location", kSwervePlacements[i])
+            mDriveLayouts[i].add("Name", kSwervePlacements[i])
                     .withPosition(1, 0)
                     .withSize(5, 1);
 
@@ -56,12 +55,7 @@ public class SwerveTab extends ShuffleboardTabBase {
                     .withPosition(0, 2)
                     .withSize(5, 1)
                     .getEntry();
-        //     mDriveCurrent[i] = mDriveLayouts[i]
-        //             .add("Stator Current ", 0.0)
-        //             .withPosition(1, 2)
-        //             .withSize(5, 1)
-        //             .getEntry();
-
+                    
             mDriveMPS[i] = mTab
                     .add("Swerve Module " + i + " MPS ", 0.0)
                     .withPosition(i * 2, 2)
@@ -94,13 +88,12 @@ public class SwerveTab extends ShuffleboardTabBase {
             mDriveIntegrated[i]
                     .setDouble(truncate(MathUtil.inputModulus(mDriveModules[i].getState().angle.getDegrees(), 0, 360)));
             mDriveMPS[i].setDouble(mDriveModules[i].getState().speedMetersPerSecond);
-            //mDriveCurrent[i].setDouble(mDriveModules[i].getDriveMotorCurrent());
         }
 
         mDriveOdometryX.setDouble(truncate(mDrive.getPoseMeters().getX()));
         mDriveOdometryY.setDouble(truncate(mDrive.getPoseMeters().getY()));
         mDriveOdometryRot
-                .setDouble(truncate(MathUtil.inputModulus(mDrive.getPoseMeters().getRotation().getDegrees(), 0, 360)));
+                .setDouble(truncate(MathUtil.inputModulus(mDrive.getRotation2d().getDegrees(), 0, 360)));
 
     }
 

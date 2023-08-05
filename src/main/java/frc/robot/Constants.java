@@ -71,7 +71,7 @@ public final class Constants {
         public static final NeutralMode angleMotorNeutralMode = NeutralMode.Coast;
         public static final NeutralMode driveMotorNeutralMode = NeutralMode.Brake;
 
-        public static final double openLoopRamp = 0; // ! What do these do?
+        public static final double openLoopRamp = 0;
         public static final double closedLoopRamp = 0;
 
         public static final double drivePowerScalar = 0.55; 
